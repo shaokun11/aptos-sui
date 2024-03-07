@@ -456,8 +456,9 @@ export class TypeTagParser {
         this.consume(">");
       }
 
-       const structTag = new StructTag(address, new Identifier(module), new Identifier(name), tyTags);
-      //const structTag = new StructTag(AccountAddress.fromHex("0x1"), new Identifier("string"), new Identifier("String"), tyTags);
+      //  const structTag = new StructTag(address, new Identifier(module), new Identifier(name), tyTags);
+      // for the all struct, we just use the id to represent the struct, so make it as a string
+      const structTag = new StructTag(AccountAddress.fromHex("0x1"), new Identifier("string"), new Identifier("String"), tyTags);
       return new TypeTagStruct(structTag);
     }
     if (tokenTy === "GENERIC") {

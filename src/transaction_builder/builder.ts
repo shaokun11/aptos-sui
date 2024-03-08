@@ -375,7 +375,7 @@ export class TransactionBuilderRemoteABI {
    * @param args
    * @returns RawTransaction
    */
-  async build(func: Gen.EntryFunctionId, ty_tags: Gen.MoveType[], args: any[]): Promise<RawTransaction> {
+  async build(func: Gen.EntryFunctionId, ty_tags: Gen.MoveType[], args: any[], sui_sender?: MaybeHexString): Promise<RawTransaction> {
     /* eslint no-param-reassign: ["off"] */
     const normlize = (s: string) => s.replace(/^0[xX]0*/g, "0x");
     func = normlize(func);
@@ -404,20 +404,29 @@ export class TransactionBuilderRemoteABI {
       // to do more check for tx context
       return param !== "signer" && param !== "&signer" && !param.includes("TxContext");;
     });
-
     // Convert abi string arguments to TypeArgumentABI
     const typeArgABIs = abiArgs.map(
       (abiArg, i) => {
         // &mut 0x1::coin::Counter
         // remove sui &mut modifier at the params 
         let cutArr = abiArg.split(" ");
-        if(cutArr.length > 1){
+        if (cutArr.length > 1) {
           abiArg = cutArr[1]
         }
-        return  new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag())
+        return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag())
       },
     );
 
+    if (sui_sender) {
+      const address_ident = "0x1::string::String"
+      typeArgABIs.push(new ArgumentABI("sui_sender", new TypeTagParser(address_ident, []).parseTypeTag()))
+      abiMap.forEach((abi, key) => {
+        if (key === func) {
+          abi.params.push(address_ident)
+        }
+      });
+      args.push(sui_sender)
+    }
     const entryFunctionABI = new EntryFunctionABI(
       funcAbi!.name,
       ModuleId.fromStr(`${addr}::${module}`),

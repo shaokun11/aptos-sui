@@ -313,7 +313,7 @@ export class AptosClient {
     }
 
     const builder = new TransactionBuilderRemoteABI(this, config);
-    return builder.build(payload.function, payload.type_arguments, payload.arguments);
+    return builder.build(payload.function, payload.type_arguments, payload.arguments, options?.sender);
   }
 
   /**

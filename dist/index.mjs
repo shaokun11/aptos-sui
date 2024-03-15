@@ -2962,7 +2962,7 @@ var TransactionBuilderRemoteABI = class {
     });
     return abiMap;
   }
-  async build(func, ty_tags, args, sui_sender) {
+  async build(func, ty_tags, args) {
     const normlize = (s) => s.replace(/^0[xX]0*/g, "0x");
     func = normlize(func);
     const funcNameParts = func.split("::");
@@ -2987,19 +2987,29 @@ var TransactionBuilderRemoteABI = class {
         if (cutArr.length > 1) {
           abiArg = cutArr[1];
         }
+        const inner_types = [
+          "0x1::string::String",
+          "0x1::object::Object",
+          "0x1::option::Option",
+          "0x1::fixed_point32::FixedPoint32",
+          "0x1::fixed_point64::FixedPoint64",
+          "u8",
+          "u16",
+          "u32",
+          "u64",
+          "u128",
+          "u256",
+          "address",
+          "vector",
+          "signer",
+          "bool"
+        ];
+        if (inner_types.includes(abiArg)) {
+          abiArg = "0x1::string::String";
+        }
         return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag());
       }
     );
-    if (sui_sender) {
-      const address_ident = "0x1::string::String";
-      typeArgABIs.push(new ArgumentABI("sui_sender", new TypeTagParser(address_ident, []).parseTypeTag()));
-      abiMap.forEach((abi, key) => {
-        if (key === func) {
-          abi.params.push(address_ident);
-        }
-      });
-      args.push(sui_sender);
-    }
     const entryFunctionABI = new EntryFunctionABI(
       funcAbi.name,
       ModuleId.fromStr(`${addr}::${module}`),
@@ -3130,7 +3140,7 @@ var _AptosClient = class {
       config.expSecFromNow = timestamp - Math.floor(Date.now() / 1e3);
     }
     const builder = new TransactionBuilderRemoteABI(this, config);
-    return builder.build(payload.function, payload.type_arguments, payload.arguments, options == null ? void 0 : options.sender);
+    return builder.build(payload.function, payload.type_arguments, payload.arguments);
   }
   async generateFeePayerTransaction(sender, payload, feePayer, secondarySignerAccounts = [], options) {
     const rawTxn = await this.generateTransaction(sender, payload, options);

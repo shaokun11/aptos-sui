@@ -12704,7 +12704,7 @@ declare class TransactionBuilderRemoteABI {
      * @param args
      * @returns RawTransaction
      */
-    build(func: EntryFunctionId, ty_tags: MoveType[], args: any[], sui_sender?: MaybeHexString): Promise<RawTransaction>;
+    build(func: EntryFunctionId, ty_tags: MoveType[], args: any[]): Promise<RawTransaction>;
 }
 
 interface OptionalTransactionArgs {

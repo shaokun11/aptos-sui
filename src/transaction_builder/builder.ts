@@ -375,7 +375,7 @@ export class TransactionBuilderRemoteABI {
    * @param args
    * @returns RawTransaction
    */
-  async build(func: Gen.EntryFunctionId, ty_tags: Gen.MoveType[], args: any[], sui_sender?: MaybeHexString): Promise<RawTransaction> {
+  async build(func: Gen.EntryFunctionId, ty_tags: Gen.MoveType[], args: any[]): Promise<RawTransaction> {
     /* eslint no-param-reassign: ["off"] */
     const normlize = (s: string) => s.replace(/^0[xX]0*/g, "0x");
     func = normlize(func);
@@ -413,20 +413,31 @@ export class TransactionBuilderRemoteABI {
         if (cutArr.length > 1) {
           abiArg = cutArr[1]
         }
+        // if is struct, use string instead it
+        const inner_types = [
+          "0x1::string::String",
+          "0x1::object::Object",
+          "0x1::option::Option",
+          "0x1::fixed_point32::FixedPoint32",
+          "0x1::fixed_point64::FixedPoint64",
+          "u8",
+          "u16",
+          "u32",
+          "u64",
+          "u128",
+          "u256",
+          "address",
+          "vector",
+          "signer",
+          "bool",
+        ]
+        if(inner_types.includes(abiArg)){
+          abiArg =  "0x1::string::String"
+        }
         return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag())
       },
     );
 
-    if (sui_sender) {
-      const address_ident = "0x1::string::String"
-      typeArgABIs.push(new ArgumentABI("sui_sender", new TypeTagParser(address_ident, []).parseTypeTag()))
-      abiMap.forEach((abi, key) => {
-        if (key === func) {
-          abi.params.push(address_ident)
-        }
-      });
-      args.push(sui_sender)
-    }
     const entryFunctionABI = new EntryFunctionABI(
       funcAbi!.name,
       ModuleId.fromStr(`${addr}::${module}`),

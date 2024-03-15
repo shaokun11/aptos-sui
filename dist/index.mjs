@@ -3005,7 +3005,7 @@ var TransactionBuilderRemoteABI = class {
           "bool"
         ];
         if (inner_types.includes(abiArg)) {
-          abiArg = "0x1::string::String";
+          abiArg = "address";
         }
         return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag());
       }

@@ -3135,7 +3135,7 @@ var TransactionBuilderRemoteABI = class {
           "signer",
           "bool"
         ];
-        if (inner_types.includes(abiArg)) {
+        if (!inner_types.includes(abiArg)) {
           abiArg = "address";
         }
         return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag());

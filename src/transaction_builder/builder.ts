@@ -402,7 +402,12 @@ export class TransactionBuilderRemoteABI {
     // just loop through all arguments and filter out `signer` and `&signer`.
     let abiArgs = funcAbi!.params.filter((param) => {
       // to do more check for tx context
-      return param !== "signer" && param !== "&signer" && !param.includes("TxContext");;
+      return param !== "signer" &&
+        param !== "&signer" &&
+        param !== "&mut 0x1::tx_context::TxContext" &&
+        param !== "&0x1::tx_context::TxContext" &&
+        param !== "0x1::tx_context::TxContext"
+      // !param.includes("TxContext");;
     });
     // Convert abi string arguments to TypeArgumentABI
     const typeArgABIs = abiArgs.map(
@@ -431,8 +436,8 @@ export class TransactionBuilderRemoteABI {
           "signer",
           "bool",
         ]
-        if(!inner_types.includes(abiArg)){
-          abiArg =  "address"
+        if (!inner_types.includes(abiArg)) {
+          abiArg = "address"
         }
         return new ArgumentABI(`var${i}`, new TypeTagParser(abiArg, ty_tags).parseTypeTag())
       },

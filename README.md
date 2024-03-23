@@ -8,7 +8,7 @@ This project is derived from the Aptos SDK with modifications to support Sui fun
 
 ## Usage
 
-> you can refer to [npm link](https://docs.npmjs.com/cli/v9/commands/npm-link) to use it as local dependency
+> You can refer to [npm link](https://docs.npmjs.com/cli/v9/commands/npm-link) to get more information
 
 1.Clone this repo, go to the root directory
 ```

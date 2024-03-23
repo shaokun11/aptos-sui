@@ -13,7 +13,7 @@ This project is derived from the Aptos SDK with modifications to support Sui fun
 ```json
 {
   "dependencies": {
-    "aptos-sui": "https://github.com/shaokun11/move-chain-sdk"
+    "aptos-sui": "https://github.com/shaokun11/aptos-sui"
   }
 }
 ```
